@@ -1,0 +1,26 @@
+---
+# tasks file for ansible-role-nfs
+
+- name: "set nfs facts"
+  set_fact:
+    nfs_server_name: "{{ item.cname }}"
+    nfs_server_ip: "{{ item.ip }}"
+  when: ("{{ item.nfs_server }}" == "true")
+  with_items:
+    - "{{ shelleg_hosts.infra }}"
+
+- name: "include server operations"
+  include: "install-server.yml"
+  when: nfs_mode != "client"
+
+- name: "config potential clients"
+  include: "config-nfs-client.yml"
+  when: nfs_mode == "client" and nfs_server_name is defined
+
+- name: "mount nfs shares/volumes"
+  include: "mount-nfs-volumes.yml"
+  when: nfs_mode == "client" and (not (nfs_default_exports is undefined or nfs_default_exports is none or nfs_default_exports | trim == ''))
+
+
+
+

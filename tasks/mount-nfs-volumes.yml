@@ -1,0 +1,28 @@
+---
+
+- name: "create nfs mounts basedir"
+  file:
+    state: directory
+    name: "{{ nfs_mount_basedir }}"
+
+- name: "mount {{ nfs_default_exports }}"
+  mount:
+    name: "{{ nfs_mount_basedir }}"
+    src: "{{ nfs_server_ip }}:{{ item }}"
+    fstype: nfs
+    opts: "{{ nfs_mount_opts }}"
+    state: mounted
+  with_items:
+  - "{{ nfs_default_exports }}"
+  when: nfs_default_exports is defined
+
+- name: "mount {{ nfs_exports }}"
+  mount:
+    name: "{{ nfs_mount_basedir }}/{{ item }}"
+    src: "{{ nfs_server_ip }}:{{ item }}"
+    fstype: nfs
+    opts: "{{ nfs_mount_opts }}"
+    state: mounted
+  with_items:
+  - "{{ nfs_exports }}"
+  when: nfs_exports is defined

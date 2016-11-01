@@ -1,0 +1,14 @@
+---
+# defaults file for ansible-role-nfs
+
+nfs_mode: client
+nfs_service_name: nfs-server
+nfs_mounts: []
+nfs_server_address:
+nfs_server_export_dir: '/exports'
+nfs_server_export_share_root_dir: "{{ nfs_server_export_dir }}/nfs-root"
+nfs_server_public_export: "{{ nfs_server_export_share_root_dir }}/public"
+nfs_default_exports: [ "{{ nfs_server_public_export }}" ]
+nfs_exports: []
+nfs_mount_opts: 'rw,sync,defaults'
+nfs_mount_basedir: /mnt/nfs-mounts/

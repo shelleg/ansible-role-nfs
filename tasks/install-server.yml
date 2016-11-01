@@ -1,0 +1,42 @@
+---
+- name: "install nfs package(s)"
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+  - nfs-common
+  - nfs-kernel-server
+
+- name: "Create nfs base dir"
+  file:
+    dest: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+  - "{{ nfs_server_export_dir }}"
+  - "{{ nfs_default_exports }}"
+
+- name: "Configure nfs"
+  template:
+    src: exports.j2
+    dest: "/etc/exports"
+    owner: root
+    group: root
+    mode: 0644
+  register: conf
+
+- name: "start {{ nfs_service_name }} service"
+  service:
+    name: "{{ nfs_service_name }}"
+    state: restarted
+    enabled: yes
+#  when: conf|changed
+
+- name: "Set nfs server name fact"
+  set_fact:
+    nfs_server_name: inventory_hostname
+
+- debug: var=nfs_server_name

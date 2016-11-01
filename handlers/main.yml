@@ -1,0 +1,14 @@
+---
+# handlers file for ansible-role-nfs
+
+- name: start "{{ nfs_service_name }}"
+  service: name="{{ nfs_service_name }}" state=started
+
+- name: stop "{{ nfs_service_name }}"
+  service: name="{{ nfs_service_name }}" state=stopped
+
+- name: restart "{{ nfs_service_name }}"
+  service: name="{{ nfs_service_name }}" state=restarted
+
+- name: reload systemd
+  command: systemctl daemon-reload

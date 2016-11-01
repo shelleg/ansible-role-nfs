@@ -1,0 +1,26 @@
+---
+
+- name: "install nfs package(s)"
+  apt:
+    name: nfs-common
+    state: latest
+    update_cache: yes
+  with_items:
+  - nfs-common
+
+- name: "Is nfs server reachable ?"
+  command: "ping {{ nfs_server_name }} -c 4"
+  ignore_errors: true
+  register: nfs_server_ping_stat
+
+- set_fact:
+    nfs_server_avail: true
+  when: "nfs_server_ping_stat.rc == 0"
+
+- name: "check exports"
+  shell: "showmount -e {{ nfs_server_name }}"
+  register: server_mounts
+  ignore_errors: false
+  when: nfs_server_ping_stat|changed
+
+- debug: msg="{{ nfs_server_name }} is reachable, with active exports ... !"
